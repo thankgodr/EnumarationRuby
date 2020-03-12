@@ -83,6 +83,7 @@ module Enumerable
     return to_enum unless block_given?
     for i in 0..self.size-1
       arr << self[i] if !proc && yield(self[i])
+      arr << self[i] if proc && proc.call(self[i])
     end
     arr
   end
