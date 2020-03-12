@@ -33,22 +33,16 @@ module Enumerable
     res.length == length
   end
 
-  def my_any?
-    count = 0
-    (0..size - 1).each do |i|
-      count += 1 unless block_given? && (self[i] != false || !self[i].nil?)
-      count += 1 if block_given? && self[i] != false && !self[i].nil? && yield(self[i])
-    end
-    count != 0
+  def my_any(&block)
+    res = my_select(&block)
+    !res.empty?
   end
 
   def my_none?
-    count = 0
-    (0..size - 1).each do |i|
-      count += 1 unless block_given? && reduceComplexity { self[i] == false || self[i].nil? }
-      count += 1 if block_given? && (self[i] == false || self[i].nil? || !yield(self[i]))
+    each do |i|
+      return false if yield(i)
     end
-    count != size
+    true
   end
 
   def my_count(variable = nil)
