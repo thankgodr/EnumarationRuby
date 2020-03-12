@@ -78,4 +78,13 @@ module Enumerable
     count
   end
 
+  def my_map()
+    arr = []
+    return to_enum unless block_given?
+    for i in 0..self.size-1
+      arr << self[i]) if yield(self[i])
+    end
+    arr
+  end
+
 end 
