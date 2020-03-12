@@ -82,7 +82,7 @@ module Enumerable
     arr = []
     return to_enum unless block_given?
     for i in 0..self.size-1
-      arr << self[i]) if yield(self[i])
+      arr << self[i] if yield(self[i])
     end
     arr
   end
@@ -94,6 +94,9 @@ module Enumerable
     variable
   end
 
-  
+  def multiply_els(variable)
+    variable.my_inject {|prod, num| prod * num }
+  end
 
 end 
+
