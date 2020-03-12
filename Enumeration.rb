@@ -28,10 +28,10 @@ module Enumerable
   def my_all?
     count = 0
     for i in 0..self.size-1
-      unless block_given? && (self[i] == false || self[i] == nil)
+      unless block_given? && (self[i] == nil || self[i] == false)
         count += 1
       end
-      if block_given? && (self[i] == false || self[i] == nil || yield(self[i]) == false || yield(self[i]) == nil)
+      if block_given? && (self[i] == false || self[i] == nil || yield(self[i]) == nil || yield(self[i]) == false )
         count += 1
       end
     end
@@ -41,7 +41,7 @@ module Enumerable
   def my_any?
     count = 0
     for i in 0..self.size-1
-      unless block_given? && (self[i] != false || self[i] != false)
+      unless block_given? && (self[i] != false || self[i] != nil)
         count += 1
       end
       if block_given? && self[i] != false && self[i] != nil && yield(self[i])
@@ -64,15 +64,15 @@ module Enumerable
     return (count == self.size) ? false : true
   end
 
-  def my_count(arg=nil)
+  def my_count(variable=nil)
     count = 0
     for i in 0..self.size-1
-      if !block_given? && arg==nil
+      if !block_given? && variable==nil
         count = self.size
       elsif block_given?
         count += 1 if yield(self[i])
       else
-        count += 1 if self[i] == arg
+        count += 1 if self[i] == variable
       end
     end
     count
@@ -86,5 +86,14 @@ module Enumerable
     end
     arr
   end
+
+  def my_inject(variable=0)
+    for i in 0..self.size-1
+      variable = yield(variable, self[i])
+    end
+    variable
+  end
+
+  
 
 end 
