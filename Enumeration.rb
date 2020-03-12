@@ -78,11 +78,11 @@ module Enumerable
     count
   end
 
-  def my_map()
+  def my_map(&proc)
     arr = []
     return to_enum unless block_given?
     for i in 0..self.size-1
-      arr << self[i] if yield(self[i])
+      arr << self[i] if !proc && yield(self[i])
     end
     arr
   end
