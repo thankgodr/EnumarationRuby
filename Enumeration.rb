@@ -1,22 +1,25 @@
 module Enumerable
   def my_each
     # Should return the array except block is given
-    return self unless block_given?
-    for i in self
+    return to_enum unless block_given?
+
+    each do |i|
       yield i
     end
   end
 
   def my_each_with_index
     # Should return the array except block is given
-    return self unless block_given?
+    return to_enum unless block_given?
+
     (0..size - 1).my_each do |i|
       yield(self[i], i)
     end
   end
 
   def my_select
-    return self unless block_given?
+    return to_enum unless block_given?
+
     # an empty array to store our selected element
     arr = []
     (0...size - 1).my_each do |i|
@@ -27,29 +30,33 @@ module Enumerable
 
   def my_all?
     return true unless block_given?
+
     count = 0
-    (self.size).times do |i|
+    size.times do |i|
       count += 1 unless yield self[i]
     end
-    count == 0
+    count.zero?
   end
 
   def my_any?
+    return true unless block_given?
+
     count = 0
-    (0..size - 1).my_each do |i|
-      count += 1 unless block_given? && (self[i] != false || !self[i].nil?)
-      count += 1 if block_given? && self[i] != false && !self[i].nil? && yield(self[i])
+    size.times do |i|
+      count += 1 unless yield self[i]
     end
     count != 0
   end
 
   def my_none?
+    return false unless block_given?
+
     count = 0
-    (0..size - 1).my_each do |i|
-      count += 1 unless block_given? && (self[i] == false || self[i].nil?)
-      count += 1 if block_given? && (self[i] == false || self[i].nil? || !yield(self[i]))
+    size.times do |i|
+      count += 1 unless yield(self[i])
+      puts count
     end
-    count != size
+    count <= 0
   end
 
   def my_count(variable = nil)
@@ -87,17 +94,4 @@ module Enumerable
   def multiply_els(variable)
     variable.my_inject { |prod, num| prod * num }
   end
-
-  def helper(enum, *expect)
-    expect.my_each do |arg|
-      if enum == arg
-        return true
-      end
-    end    
-    return false
-  end
 end
-
-[1,1,1,1,4,1].my_each{ |x| 
-   puts x * 2
- }
