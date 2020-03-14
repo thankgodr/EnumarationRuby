@@ -29,13 +29,12 @@ module Enumerable
   end
 
   def my_all?
-    status = true;
-    self.my_each{|x| 
-      if x == nil || x == false
-        status = false
-      end
-    }
-    return status unless block_given? 
+    status = true
+    my_each do |x|
+      status = false if x.nil? || x == false
+    end
+    return status unless block_given?
+
     count = 0
     size.times do |i|
       count += 1 unless yield self[i]
@@ -44,13 +43,11 @@ module Enumerable
   end
 
   def my_any?
-    status = true;
-    self.my_each{|x| 
-      if x == nil || x == false
-        status = false
-      end
-    }
-    return status unless block_given? 
+    status = true
+    my_each do |x|
+      status = false if x.nil? || x == false
+    end
+    return status unless block_given?
 
     count = 0
     size.times do |i|
@@ -60,19 +57,17 @@ module Enumerable
   end
 
   def my_none?
-    status = true;
-    self.my_each{|x| 
-      if x == nil || x == false
-        status = false
-      end
-    }
-    return status unless block_given? 
+    status = true
+    my_each do |x|
+      status = false if x.nil? || x == false
+    end
+    return status unless block_given?
 
     count = 0
     size.times do |i|
       count += 1 if yield(self[i])
     end
-    count == 0
+    count.zero?
   end
 
   def my_count(variable = nil)
@@ -94,7 +89,7 @@ module Enumerable
     return to_enum unless block_given?
 
     (0..size - 1).my_each do |i|
-      puts 
+      puts
       arr << yield(self[i]) if !proc && yield(self[i])
       arr << yield(self[i]) if proc&.call(self[i])
     end
@@ -112,5 +107,3 @@ module Enumerable
     variable.my_inject { |prod, num| prod * num }
   end
 end
-
-puts [1, 2, 3].my_map { |x| x + 2 }
