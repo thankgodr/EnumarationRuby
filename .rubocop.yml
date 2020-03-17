@@ -40,3 +40,7 @@ Layout/ExtraSpacing:
 Layout/MultilineMethodCallIndentation:
   Enabled: true
   EnforcedStyle: indented
+Style/Semicolon:
+  Enabled: false
+Security/Eval:
+  Enabled: false

@@ -19,21 +19,19 @@ module Enumerable
     return to_enum unless block_given?
 
     arr = []
-    (0...size - 1).my_each do |i|
-      arr << self[i] if yield(self[i])
-    end
+    (0...size - 1).my_each { |i| arr << self[i] if yield(self[i]) }
     arr
   end
 
   def my_all?(variable = nil)
     status = true
-    my_each do |x|
-      status = nil_check(x)
-    end
+    my_each { |x| status = nil_check(x) }
     return status unless block_given? || !variable.nil?
 
     if block_given?
-      my_each { |x| return false unless yield x }
+      count = 0
+      my_each { |x| count += 1 if yield x }
+      status = count == size
     else
       status = size == veb_check(self, variable)
     end
@@ -42,9 +40,11 @@ module Enumerable
 
   def my_any?(variable = nil)
     status = false
-    my_each { |x| status = true if nil_check(x) }
+    count = 0
+    my_each { |x| count += 1 if nil_check(x) }
+    return count.positive? unless block_given?
+
     if block_given?
-      count = 0
       my_each { |x| count += 1 if yield x }
       status = count != 0
     else
@@ -86,10 +86,14 @@ module Enumerable
     if variable.is_a? Symbol
       total = 0
       my_each { |i| total = "#{total} #{variable} #{i}" }
-      return total
+      return eval total
     end
-    total = variable || self[0]
-    (1..size).each { |i| total = yield(total, i) }
+    if variable.zero?
+      my_each_with_index { |i, index| total = index.zero? ? i : total; total = yield(total, i) }
+    else
+      total = variable
+      my_each { |i| total = yield(total, i) }
+    end
     total
   end
 
