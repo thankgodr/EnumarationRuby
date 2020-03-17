@@ -1,6 +1,5 @@
 module Enumerable
   def my_each
-    # Should return the array except block is given
     return to_enum unless block_given?
 
     each do |i|
@@ -9,7 +8,6 @@ module Enumerable
   end
 
   def my_each_with_index
-    # Should return the array except block is given
     return to_enum unless block_given?
 
     (0..size - 1).my_each do |i|
@@ -20,7 +18,6 @@ module Enumerable
   def my_select
     return to_enum unless block_given?
 
-    # an empty array to store our selected element
     arr = []
     (0...size - 1).my_each do |i|
       arr << self[i] if yield(self[i])
@@ -28,46 +25,36 @@ module Enumerable
     arr
   end
 
-  def my_all?
+  def my_all?(variable = nil)
     status = true
     my_each do |x|
-      status = false if x.nil? || x == false
+      status = nil_check(x)
     end
-    return status unless block_given?
+    return status unless block_given? || !variable.nil?
 
-    count = 0
-    size.times do |i|
-      count += 1 unless yield self[i]
+    if block_given?
+      my_each { |x| return false unless yield x }
+    else
+      status = !veb_check(self, variable, status)
     end
-    count.zero?
+    status
   end
 
-  def my_any?
-    status = true
-    my_each do |x|
-      status = false if x.nil? || x == false
+  def my_any?(variable = nil)
+    status = false
+    my_each { |x| status = true if nil_check(x) }
+    if block_given?
+      count = 0
+      my_each { |x| count += 1 if yield x }
+      status = count != 0
+    else
+      status = veb_check(self, variable, status)
     end
-    return status unless block_given?
-
-    count = 0
-    size.times do |i|
-      count += 1 if yield self[i]
-    end
-    count != 0
+    status
   end
 
-  def my_none?
-    status = true
-    my_each do |x|
-      status = false if x.nil? || x == false
-    end
-    return status unless block_given?
-
-    count = 0
-    size.times do |i|
-      count += 1 if yield(self[i])
-    end
-    count.zero?
+  def my_none?(arg = nil, &block)
+    !my_any?(arg, &block)
   end
 
   def my_count(variable = nil)
@@ -89,21 +76,42 @@ module Enumerable
     return to_enum unless block_given?
 
     (0..size - 1).my_each do |i|
-      puts
       arr << yield(self[i]) if !proc && yield(self[i])
-      arr << yield(self[i]) if proc&.call(self[i])
+      arr << yield(self[i]) if proc&.call(self[i]) || !proc&.call(self[i])
     end
     arr
   end
 
   def my_inject(variable = 0)
-    (0..size - 1).my_each do |i|
-      variable = yield(variable, self[i])
+    if variable.is_a? Symbol
+      total = 0
+      my_each { |i| total = "#{total} #{variable} #{i}" }
+      return total
     end
-    variable
+    total = variable || self[0]
+    (1..size).each { |i| total = yield(total, i) }
+    total
   end
 
   def multiply_els(variable)
     variable.my_inject { |prod, num| prod * num }
+  end
+
+  def nil_check(arg)
+    arg.nil? || arg == false ? true : false
+  end
+
+  def veb_check(arr, variable, status)
+    case variable
+    when variable.is_a?(Regexp)
+      status = arr.my_each { |x| return variable.match?(x) }
+    when variable.is_a?(Class)
+      status = !arr.my_each { |x| return x.is_a? variable }
+    else
+      count = 0
+      arr.my_each { |x| count += 1 if x == variable }
+      status = count != 0
+    end
+    status
   end
 end
