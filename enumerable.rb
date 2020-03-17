@@ -35,7 +35,7 @@ module Enumerable
     if block_given?
       my_each { |x| return false unless yield x }
     else
-      status = !veb_check(self, variable, status)
+      status = size == veb_check(self, variable)
     end
     status
   end
@@ -48,7 +48,7 @@ module Enumerable
       my_each { |x| count += 1 if yield x }
       status = count != 0
     else
-      status = veb_check(self, variable, status)
+      status = veb_check(self, variable).positive?
     end
     status
   end
@@ -101,17 +101,15 @@ module Enumerable
     arg.nil? || arg == false ? true : false
   end
 
-  def veb_check(arr, variable, status)
-    case variable
-    when variable.is_a?(Regexp)
-      status = arr.my_each { |x| return variable.match?(x) }
-    when variable.is_a?(Class)
-      status = !arr.my_each { |x| return x.is_a? variable }
+  def veb_check(arr, variable)
+    count = 0
+    if variable.is_a?(Regexp)
+      arr.my_each { |x| x.match?(variable) ? count += 1 : count = count }
+    elsif variable.is_a?(Class)
+      arr.my_each { |x| x.is_a?(variable) ? count += 1 : count = count }
     else
-      count = 0
       arr.my_each { |x| count += 1 if x == variable }
-      status = count != 0
     end
-    status
+    count
   end
 end
