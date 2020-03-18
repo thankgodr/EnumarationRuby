@@ -3,7 +3,6 @@ AllCops:
     - "README.md"
     - "Guardfile"
     - "Rakefile"
-    - "spec/**/*"
 
   DisplayCopNames: true
 
@@ -40,7 +39,3 @@ Layout/ExtraSpacing:
 Layout/MultilineMethodCallIndentation:
   Enabled: true
   EnforcedStyle: indented
-Style/Semicolon:
-  Enabled: false
-Security/Eval:
-  Enabled: false

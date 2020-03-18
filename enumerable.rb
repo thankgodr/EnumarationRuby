@@ -19,7 +19,7 @@ module Enumerable
     return to_enum unless block_given?
 
     arr = []
-    (0...size - 1).my_each { |i| arr << self[i] if yield(self[i]) }
+    (0...size).my_each { |i| arr << self[i] if yield(self[i]) }
     arr
   end
 
@@ -30,7 +30,7 @@ module Enumerable
     return count == size if !block_given? && variable.nil?
 
     if block_given?
-      count = 0;
+      count = 0
       my_each { |x| count += 1 if yield x }
       status = count == size
     else
@@ -46,7 +46,7 @@ module Enumerable
     return count.positive? if !block_given? && variable.nil?
 
     if block_given?
-      count = 0;
+      count = 0
       my_each { |x| count += 1 if yield x }
       status = count != 0
     else
@@ -85,22 +85,20 @@ module Enumerable
   end
 
   def my_inject(variable = 0, variable2 = nil)
-    if variable2.is_a? Symbol
-      total = variable.zero? ? 0 : variable; my_each { |i| total = "#{total} #{variable2} #{i}" }
-      return eval total
-    end
+    return perform(variable, variable2) if variable2.is_a?(Symbol) || variable.is_a?(Symbol)
+
     if variable.zero?
+      total = 0
       my_each_with_index do |i, index|
         if index.zero?
           total = i
           next
-        else
-          total
         end
         total = yield(total, i)
       end
     else
-      total = variable; my_each { |i| total = yield(total, i) }
+      total = variable
+      my_each { |i| total = yield(total, i) }
     end
     total
   end
@@ -125,5 +123,19 @@ module Enumerable
       arr.my_each { |x| count += 1 if x == variable }
     end
     count
+  end
+
+  def calculate(total, number, operator)
+    total.send operator, number
+  end
+
+  def perform(variable, variable2)
+    total = variable.is_a?(Symbol) ? 0 : variable
+    if nil_check(variable2)
+      my_each { |x| total = calculate(total, x, variable) }
+    else
+      my_each { |x| total = calculate(total, x, variable2) }
+    end
+    total
   end
 end
