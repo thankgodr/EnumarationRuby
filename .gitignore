@@ -1,5 +1,8 @@
 *.gem
 *.rbc
+.ruby-version
+Gemfile
+Gemfile.lock
 /.config
 /coverage/
 /InstalledFiles
