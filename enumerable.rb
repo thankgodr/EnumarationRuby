@@ -84,13 +84,21 @@ module Enumerable
     arr
   end
 
-  def my_inject(variable = 0)
-    if variable.is_a? Symbol
-      total = 0; my_each { |i| total = "#{total} #{variable} #{i}" }
+  def my_inject(variable = 0, variable2 = nil)
+    if variable2.is_a? Symbol
+      total = variable.zero? ? 0 : variable; my_each { |i| total = "#{total} #{variable2} #{i}" }
       return eval total
     end
     if variable.zero?
-      my_each_with_index { |i, index| total = index.zero? ? i : total; total = yield(total, i) }
+      my_each_with_index do |i, index|
+        if index.zero?
+          total = i
+          next
+        else
+          total
+        end
+        total = yield(total, i)
+      end
     else
       total = variable; my_each { |i| total = yield(total, i) }
     end
@@ -100,7 +108,9 @@ module Enumerable
   def multiply_els(variable)
     variable.my_inject { |prod, num| prod * num }
   end
+end
 
+module Enumerable
   def nil_check(arg)
     arg.nil? || arg == false ? true : false
   end
