@@ -25,11 +25,12 @@ module Enumerable
 
   def my_all?(variable = nil)
     status = true
-    my_each { |x| status = nil_check(x) }
-    return status unless block_given? || !variable.nil?
+    count = 0
+    my_each { |x| !nil_check(x) ? count += 1 : count = count }
+    return count == size if !block_given? && variable.nil?
 
     if block_given?
-      count = 0
+      count = 0;
       my_each { |x| count += 1 if yield x }
       status = count == size
     else
@@ -41,10 +42,11 @@ module Enumerable
   def my_any?(variable = nil)
     status = false
     count = 0
-    my_each { |x| count += 1 if nil_check(x) }
-    return count.positive? unless block_given?
+    my_each { |x| count += 1 unless nil_check(x) }
+    return count.positive? if !block_given? && variable.nil?
 
     if block_given?
+      count = 0;
       my_each { |x| count += 1 if yield x }
       status = count != 0
     else
@@ -84,15 +86,13 @@ module Enumerable
 
   def my_inject(variable = 0)
     if variable.is_a? Symbol
-      total = 0
-      my_each { |i| total = "#{total} #{variable} #{i}" }
+      total = 0; my_each { |i| total = "#{total} #{variable} #{i}" }
       return eval total
     end
     if variable.zero?
       my_each_with_index { |i, index| total = index.zero? ? i : total; total = yield(total, i) }
     else
-      total = variable
-      my_each { |i| total = yield(total, i) }
+      total = variable; my_each { |i| total = yield(total, i) }
     end
     total
   end
