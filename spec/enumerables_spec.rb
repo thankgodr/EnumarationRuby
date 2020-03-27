@@ -68,7 +68,6 @@ RSpec.describe Enumerable do
       expect(tempArr).not_to eql(true)
     end
 
-
     let(:expected_testArray) { testArray.my_all? { |x| x > 0 } }
 
     it 'Returns true if all elements fill criteria' do
@@ -106,14 +105,12 @@ RSpec.describe Enumerable do
       expect(tempArr).not_to eql(true)
     end
 
-
     let(:expected_testArray) { testArray.my_none? { |x| x < 0 } }
 
     it 'Return true if none of the elements fill criteria' do
       expect(expected_testArray).to eql(true)
       expect(expected_testArray).not_to eql(false)
     end
-
   end
 
   describe '#my_count' do
@@ -126,7 +123,6 @@ RSpec.describe Enumerable do
       expect(testArray.my_count(&:even?)).to eql(2)
       expect(testArray.my_count(&:even?)).not_to eql(5)
     end
-
 
     it 'Return the count of value equal to 5' do
       expect(testArray.my_count(5)).to eql(1)
@@ -152,18 +148,15 @@ RSpec.describe Enumerable do
       expect(testArray.my_inject(5, :+)).not_to eql(10)
     end
 
-
     it 'Add all numbers using symbol' do
       expect(testArray.my_inject(:+)).to eql(15)
       expect(testArray.my_inject(:+)).not_to eql(200)
     end
 
-
     it 'Use and injected number with a block' do
       expect(testArray.my_inject(5) { |acumulator, x| acumulator + x }).to eql(20)
       expect(testArray.my_inject(5) { |acumulator, x| acumulator + x }).not_to eql(150)
     end
-
 
     it 'Use Symbol for opeartions' do
       expect(testArray.my_inject { |accumulator, x| accumulator + x }).to eql(15)
